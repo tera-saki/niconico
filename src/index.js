@@ -5,7 +5,7 @@ const _ = require('lodash')
 
 const { fe, createDriver } = require('./function')
 const redis = new Redis()
-const config = require('./config')
+const config = require('../config/config')
 
 const expiredays = 10
 const expiresecs = expiredays * 24 * 60 * 60
