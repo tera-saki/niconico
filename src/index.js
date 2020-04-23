@@ -16,7 +16,7 @@ async function login(driver) {
   await mail_input.sendKeys(config.email)
   const password_input = await fe(driver, '//input[@id="input__password"]')
   await password_input.sendKeys(config.password)
-  const login_btn = await fe(driver, '//input[@value="ログイン"]')
+  const login_btn = await fe(driver, '//input[@id="login__submit"]')
   await login_btn.click()
 }
 
