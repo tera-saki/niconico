@@ -11,7 +11,7 @@ const expiredays = 10
 const expiresecs = expiredays * 24 * 60 * 60
 
 async function login(driver) {
-  await driver.get('https://www.nicovideo.jp/my/top')
+  await driver.get('https://www.nicovideo.jp/my/?ref=pc_mypage_menu')
   const mail_input = await fe(driver, '//input[@id="input__mailtel"]')
   await mail_input.sendKeys(config.email)
   const password_input = await fe(driver, '//input[@id="input__password"]')
@@ -20,18 +20,27 @@ async function login(driver) {
   await login_btn.click()
 }
 
+async function closeModal(driver) {
+  try {
+    const button = await driver.findElement(By.className('UserPageAnnounceContainer-useNewMyPageButton'))
+    await button.click()
+  } catch (e) {
+    ;
+  }
+}
+
 async function getNicorepo(driver) {
-  await driver.wait(until.elementLocated(By.className('NicorepoTimelineItem')))
-  const repos = await driver.findElements(By.className('NicorepoTimelineItem'))
+  await driver.wait(until.elementLocated(By.className('NicorepoTimeline-item')))
+  const repos = await driver.findElements(By.className('NicorepoTimeline-item'))
   const results = []
   for (const repo of repos) {
-    const log_body = await repo.findElement(By.className('log-body'))
-    const message = await log_body.getText()
-    const user = await log_body.findElement(By.css('a')).getText()
-    if (message.match('動画を投稿しました')) {
-      const log_target = await repo.findElement(By.className('log-target-info'))
-      const title = await log_target.findElement(By.css('a')).getText()
-      const url_q = await log_target.findElement(By.css('a')).getAttribute('href')
+    const senderName = await repo.findElement(By.className('NicorepoItem-senderName'))
+    const user = await senderName.getText()
+    const description = await repo.findElement(By.className('NicorepoItem-activityDescription')).getText()
+    if (description.match('動画を投稿しました')) {
+      const content = await repo.findElement(By.className('NicorepoItem-content'))
+      const title = await content.findElement(By.className('NicorepoItem-contentDetailTitle')).getText()
+      const url_q = await content.getAttribute('href')
       const url = url_q.split('?')[0]
       results.push({ title, user, url })
     }
@@ -67,6 +76,7 @@ async function main() {
   const driver = await createDriver()
   try {
     await login(driver)
+    await closeModal(driver)
     const repos = await getNicorepo(driver)
     const newRepos = await extractNewRepos(repos)
     await sendToSlack(newRepos)
