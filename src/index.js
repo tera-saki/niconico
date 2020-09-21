@@ -31,7 +31,7 @@ async function closeModal(driver) {
 
 async function getNicorepo(driver) {
   await driver.wait(until.elementLocated(By.className('NicorepoTimeline-item')))
-  const repos = await driver.findElements(By.className('NicorepoTimeline-item'))
+  const repos = (await driver.findElements(By.className('NicorepoTimeline-item'))).reverse()
   const results = []
   for (const repo of repos) {
     const senderName = await repo.findElement(By.className('NicorepoItem-senderName'))
