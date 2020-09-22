@@ -11,7 +11,7 @@ const expiredays = 10
 const expiresecs = expiredays * 24 * 60 * 60
 
 async function login(driver) {
-  await driver.get('https://www.nicovideo.jp/my/?ref=pc_mypage_menu')
+  await driver.get('https://www.nicovideo.jp/my/nicorepo/all?type=videoUpload')
   const mail_input = await fe(driver, '//input[@id="input__mailtel"]')
   await mail_input.sendKeys(config.email)
   const password_input = await fe(driver, '//input[@id="input__password"]')
@@ -36,14 +36,11 @@ async function getNicorepo(driver) {
   for (const repo of repos) {
     const senderName = await repo.findElement(By.className('NicorepoItem-senderName'))
     const user = await senderName.getText()
-    const description = await repo.findElement(By.className('NicorepoItem-activityDescription')).getText()
-    if (description.match('動画を投稿しました')) {
-      const content = await repo.findElement(By.className('NicorepoItem-content'))
-      const title = await content.findElement(By.className('NicorepoItem-contentDetailTitle')).getText()
-      const url_q = await content.getAttribute('href')
-      const url = url_q.split('?')[0]
-      results.push({ title, user, url })
-    }
+    const content = await repo.findElement(By.className('NicorepoItem-content'))
+    const title = await content.findElement(By.className('NicorepoItem-contentDetailTitle')).getText()
+    const url_q = await content.getAttribute('href')
+    const url = url_q.split('?')[0]
+    results.push({ title, user, url })
   }
   return results
 }
