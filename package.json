@@ -6,7 +6,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "ioredis": "^4.16.3",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "selenium-webdriver": "^4.0.0-alpha.8"
   }
 }
